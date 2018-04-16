@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<form action="" method="POST" enctype="multipart/form-data">
+    <p>{{ form.user }} {{ form.user.errors }}</p>
+    <p>{{ form.gender }} {{ form.gender.errors }}</p>
+    <p>{{ form.city }} {{ form.city.errors }}</p>
+    <p>{{ form.pwd }} {{ form.pwd.errors }}</p>
+    <input type="submit"/>
+    {% csrf_token %}
+    <div id='myId' class="dropzone panel-content"  style="height: 250px">
+
+<button type="button" id="sub-img" class="btn btn-xs  col-lg-pull-12">提交作业</button>
+                          </div>
+</form>
+
+
+</body>
+</html>
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/plugin/dropzone.js"></script>
+    <script src="/static/js/jquery.cookie.js"></script>
+    <script>
+        upload_status=false
+        Dropzone.autoDiscover = false;
+        $("#myId").dropzone({
+            url: window.document.location.href,
+            method: 'post',
+            clickable:true,
+            autoProcessQueue:false,
+            acceptedFiles:".RAR,.ZIP,.CAB,.ARJ,.LZH,.ACE,.7-Zip,.TAR,.GZip,.UUE,.BZ2,.JAR,.ISO,.Z",
+            filesizeBase: 1024,
+            uploadMultiple: true,
+            data:{'xxx':'yyy'},
+            parallelUploads: 100,
+            headers:{"X-CSRFToken":$.cookie("csrftoken")},
+            maxFiles: 2,
+            dictDefaultMessage:"请将作业以压缩格式上传,命名为班级+姓名",
+            init:function () {
+                this.on("addedfile", function(file) {
+                     var removeButton = Dropzone.createElement("<button id='del-btn' class='btn btn-danger btn-xs'>删除文件</button>");
+                     var _this = this;
+
+                     removeButton.addEventListener("click", function(e) {
+
+                          e.preventDefault();
+                          e.stopPropagation();
+                          _this.removeFile(file);
+                     });
+                     file.previewElement.appendChild(removeButton);
+
+                })
+
+                var _this = this;
+
+                $("#sub-img").on("click", function() {
+                    if (_this.files.length==1){_this.processQueue();}
+                    else{alert("请上传压缩包格式的作业")}
+
+                });
+
+                this.on("maxfilesexceeded", function(file) { this.removeFile(file); });
+
+
+                this.on("success", function(e) {
+                    $("#sub-img").remove();
+                    $("#del-btn").remove();
+
+
+
+                });
+            },
+
+
+    });
+    </script>

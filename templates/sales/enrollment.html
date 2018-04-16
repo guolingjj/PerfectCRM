@@ -1,0 +1,60 @@
+{% extends 'blank.html' %}
+
+
+
+    {% block page-content %}
+        {% if customer.status == 1 %}
+            <div class="alert alert-success" role="alert">请将此链接发送给学院完成注册
+                <a href={{ msg }} class="alert-link">{{ msg }}</a>
+            </div>
+        {%elif customer.status == 2 %}
+
+            {{ customer_form_obj.as_p }}
+            <div class="form-group">
+                <div class=" col-sm-5 col-lg-6 pull-left">
+                    <a href="confirm/?pass=1"><button type="button" class="btn btn-default">审核通过</button></a>
+                </div>
+                <div class=" col-sm-5 col-lg-6 pull-right">
+                    <a href="confirm/?pass=2"><button type="button" class="btn btn-default">审核不通过</button></a>
+                </div>
+            </div>
+
+
+        {%elif customer.status == 3 %}
+            <div class="alert alert-success" role="alert">等待财务员审核缴费
+
+            </div>
+        {% else %}
+
+            <div class="col-lg-5">
+                <form class="form-horizontal" method="POST">{% csrf_token %}
+                    <div class="page-header">
+                        <h1>客户报名 <small>{{ customer.name }}</small></h1>
+                    </div>
+                    {% if mforms_obj.errors %}
+                        <div class="alert alert-danger" role="alert">{{ mforms_obj.errors }}</div>
+                    {% endif %}
+
+
+                    {% for obj in mforms_obj%}
+
+                      <div class="form-group">
+                        <label  class="col-sm-3 control-label">{{ obj.label }}</label>
+                        <div class="col-sm-8">
+                          {{ obj }}
+                        </div>
+                      </div>
+                    {% endfor %}
+
+                  <div class="form-group">
+                    <div class=" col-sm-8 col-lg-offset-8">
+                      <button type="submit" class="btn btn-default">下一步</button>
+                    </div>
+                  </div>
+                </form>
+            </div>
+        {% endif %}
+
+{% endblock %}
+
+

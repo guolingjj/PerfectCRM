@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load tags %}
+{% block body %}
+
+
+
+
+    <div class="panel panel-default " style="margin-top: 50px">
+        {% for i,j in obj.items %}
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ i }}</h3>
+        </div>
+
+            {% for table_name,table_obj in j.items %}
+                <div class="panel-body">
+                <a href="../{{ i }}/{{ table_name }}/">{% get_verbose_name table_obj %}  </a>
+                </div>
+            {% endfor %}
+
+        {% endfor %}
+    </div>
+
+
+
+
+<div id="qb-sougou-search" style="display: none; opacity: 0;"><p>搜索</p><p class="last-btn">复制</p><iframe src="./Dashboard Template for Bootstrap_files/saved_resource.html"></iframe></div></body>
+{% endblock %}

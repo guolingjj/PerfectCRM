@@ -1,0 +1,87 @@
+{% extends 'blank.html' %}
+{% load teacher_tags %}
+{% block style %}
+    <style>
+        .stu_show{
+           display:none;
+        }
+        .point{
+            cursor:pointer
+        }
+
+
+
+    </style>
+{% endblock %}
+
+{% block row-menus %}
+    <ol class="breadcrumb"><i class="fa fa-home"></i><li><a href="{% url 'teacher_index' %}">首页</a></li>
+        <li><i class="fa fa-book"></i><a href="./">课程记录</a></li>
+    <li><i class="fa fa-add"></i>添加课程记录</li>
+    </ol>
+
+
+{% endblock  %}
+{% block left-menu %}
+
+{% endblock  %}
+
+
+{% block page-content %}
+
+
+    </div>
+
+
+    <div class="col-sm-12">
+          <section class="panel">
+              {% if error %}
+                  <div class="alert alert-block alert-danger fade in">
+                      <strong>错误了!</strong> {{ error }}
+                  </div>
+              {% endif %}
+              <header class="panel-heading">
+                  添加{{ clazz_obj }}上课记录
+
+              </header>
+
+              <!--S_input form-->
+          <form class='form-validate form-horizontal' action="" method="POST">
+               {% for field in RCforms %}
+                <div class="form-group" id="filed-list{{ field.name }}">
+
+                        <label  class="col-sm-2 control-label" style="font-weight: normal">
+                            {% if field.field.required %}
+                                {{ field.label }}<span class="required">*</span>
+                            {% else %}
+                                {{ field.label }}
+                            {% endif %}
+                        </label>
+
+
+
+
+                    <div class="col-sm-5" id="{{ field.name }}">
+                        {{ field }}
+
+
+
+                    </div>
+                </div>
+
+            {% endfor %}
+           <button type="submit" class="btn btn-default">save</button>
+              {% csrf_token %}
+          </form>
+
+              <!--E_input form-->
+
+          </section>
+    </div>
+
+{% endblock %}
+{% block script %}
+
+
+{% endblock %}
+

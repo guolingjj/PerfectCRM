@@ -1,0 +1,134 @@
+{% extends 'blank.html' %}
+
+{% block style %}
+    <style>
+        .stu_show{
+           display:none;
+        }
+
+
+
+
+    </style>
+{% endblock %}
+
+{% block row-menus %}
+    <ol class="breadcrumb">
+        <i class="fa fa-home"></i><li><a href="{% url 'teacher_index' %}">首页</a></li>
+        <li><i class="fa fa-book"></i><a href="javascript:void(0)">课程记录</a></li>
+
+    </ol>
+
+
+{% endblock  %}
+{% block left-menu %}
+
+{% endblock  %}
+
+
+{% block page-content %}
+    <div class="alert alert-info stu_show">
+
+    </div>
+
+
+    <div class="col-sm-12">
+          <section class="panel">
+              <header class="panel-heading">
+                  xxx上课记录
+                  <div class='col-lg-1 pull-right'>
+                        <a href="./add"><button type="button" class="btn btn-success btn-xs ">添加一条数据</button></a>
+                    </div>
+              </header>
+              <table class="table table-hover">
+                  <thead>
+                  <tr>
+                      <th>#</th>
+                      <th>学生姓名</th>
+                      <th>所报课程</th>
+                      <th>价格</th>
+                      <th>所报班级</th>
+                      <th>销售</th>
+                      <th>确认缴费</th>
+
+
+
+                  </tr>
+                  </thead>
+                  <tbody>
+
+                  {% for courserecord_obj in courserecord_obj_queryset %}
+                      <tr>
+                          <td>xx</td>
+                          <td>第{{ courserecord_obj.day_num }}节</td>
+                          <td>{{ courserecord_obj.outline }}</td>
+                          <td>{{ courserecord_obj.home_title }}</td>
+                          <td>{{ courserecord_obj.clazz.enrollment_set.all.count }}</td>
+                          <td class="already  moreinfor">
+                              <a href="javascrpt:void(0)">{% get_filter_stu_num courserecord_obj 0%}</a>
+                              <span class="stu_show">签到:{% get_filter_stu_list courserecord_obj 0%}</span>
+                          </td>
+
+
+                          <td class="late moreinfor">
+                              <a href="javascrpt:void(0)">{% get_filter_stu_num courserecord_obj 1%}</a>
+                              <span class="stu_show">迟到:{% get_filter_stu_list courserecord_obj 1%}</span>
+
+                          </td>
+
+
+                          <td class="absenteeism moreinfor">
+                              <a href="javascrpt:void(0)">{% get_filter_stu_num courserecord_obj 2%}</a>
+                              <span class="stu_show">缺勤:{% get_filter_stu_list courserecord_obj 2%}</span>
+                          </td>
+
+                          <td class="leave-early moreinfor">
+                              <a href="javascrpt:void(0)">{% get_filter_stu_num courserecord_obj 3%}</a>
+                              <span class="stu_show">早退:{% get_filter_stu_list courserecord_obj 3%}</span>
+
+                          </td>
+                          <td class="ask-for-leave moreinfor">
+                              <a href="javascrpt:void(0)">{% get_filter_stu_num courserecord_obj 4%}</a>
+                              <span class="stu_show">请假:{% get_filter_stu_list courserecord_obj 4%}</span>
+                          </td>
+
+
+                          <td>xxx</td>
+                          <td>{{ courserecord_obj.teachers.name }}</td>
+
+
+                      </tr>
+
+                  {% endfor %}
+
+
+
+
+
+
+                  </tbody>
+              </table>
+          </section>
+    </div>
+
+{% endblock %}
+{% block script %}
+    <script>
+        $('.moreinfor').on("click",'a',function () {
+
+            $('.alert').removeClass('stu_show')
+            $('.alert').empty()
+            var infor=$(this).siblings('span').html()
+            $('.alert').html(infor)
+
+
+
+
+        })
+
+
+
+    </script>
+
+{% endblock %}
+

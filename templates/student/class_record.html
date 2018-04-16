@@ -1,0 +1,81 @@
+{% extends 'blank.html' %}
+{% load stu_tags %}
+{% block row-menus %}
+    <ol class="breadcrumb">
+     <li><i class="fa fa-home"></i><a href="{% url 'student_index' %}">Home</a></li>
+    <li><i class="fa fa-book"></i>课程详情</li>
+    </ol>
+{% endblock  %}
+{% block page-content %}
+    <div class="col-sm-12">
+          <section class="panel">
+              <header class="panel-heading">
+                  学生信息
+              </header>
+              <table class="table table-hover">
+                  <thead>
+                  <tr>
+                      <th>#</th>
+
+                      <th>课程名字</th>
+                      <th>课程节数</th>
+                      <th>时间</th>
+                      <th>作业大纲</th>
+                      <th>成绩</th>
+                      <th>签到状态</th>
+                      <th>作业</th>
+
+
+
+                  </tr>
+                  </thead>
+                  <tbody>
+
+                  {% for studyrecord in request.user.studyrecord_set.all %}
+                      <tr>
+                          <td>xx</td>
+                          <td>{{ studyrecord.course_record.clazz }}</td>
+                          <td>第{{ studyrecord.course_record.day_num }}节</td>
+                          <td>{{ studyrecord.data }}</td>
+                          <td>{{ studyrecord.course_record.outline }}</td>
+                          <td>{{ studyrecord.get_score_display }}</td>
+                          <td>{{ studyrecord.get_attendance_display }}</td>
+
+                          {% if studyrecord.course_record.has_homework  %}
+
+
+
+                                {% if studyrecord.has_submit_homework  %}
+
+                                    <td><a href="{{ studyrecord.id }}/homework">查看作业</a></td>
+                                {% else %}
+
+                                    <td><a href="{{ studyrecord.id }}/homework">交作业</a></td>
+                                {% endif %}
+                          {% else %}
+                              <td>没有作业!!!</td>
+                          {% endif %}
+
+                          
+                      </tr>
+                  {% endfor %}
+
+
+
+
+                  <tr>
+                      <td>123</td>
+                      <td colspan="5">Larry the Bird</td>
+                      <td>@twitter</td>
+
+                  </tr>
+
+                  </tbody>
+              </table>
+          </section>
+    </div>
+
+{% endblock %}
+
+</body>
+</html>

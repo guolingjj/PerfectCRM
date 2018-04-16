@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load tags%}
+{% block body %}
+    <h3>你确定要删除 <b>{{ current_obj }}</b></h3>
+    <h5>这些关联关系将都被删除</h5>
+
+    {% for i in wrong %}
+        <li style="color: red">{{ i }}</li>
+
+    {% endfor %}
+
+
+    {% handle_related_obj current_obj %}
+
+    <div class="col-lg-1"><a href="./?delete=true "><button type="button" class="btn btn-danger">确定</button></a></div>
+    <div class="col-lg-1"><a href="javascript:history.go(-1)"><button type="button" class="btn bbtn-primary">返回</button></a></div>
+{% endblock %}

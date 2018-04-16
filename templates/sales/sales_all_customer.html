@@ -1,0 +1,20 @@
+{% extends 'sales/sales_index.html' %}
+
+{% block left-menu %}
+    <li class="sub-menu">
+          <a href="javascript:;" class="">
+              <i class="icon_document_alt"></i>
+              <span>客户</span>
+              <span class="menu-arrow arrow_carrot-down"></span>
+          </a>
+          <ul class="sub " style="display: block">
+              <li><a class="" href="form_component.html">我的客户</a></li>
+              <li style="background: grey"><a class="active" href="{% url 'sales_all_customer' %}">所有客户</a></li>
+          </ul>
+    </li>
+{% endblock  %}
+{% block page-content %}
+    
+
+{% endblock %}
+

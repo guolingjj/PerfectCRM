@@ -1,0 +1,61 @@
+{% extends 'blank.html' %}
+{% load stu_tags %}
+{% block row-menus %}
+    <ol class="breadcrumb"><li><i class="fa fa-home"></i>首页</li></ol>
+
+{% endblock  %}
+{% block left-menu %}
+
+{% endblock  %}
+
+
+{% block page-content %}
+    <div class="col-sm-12">
+          <section class="panel">
+              <header class="panel-heading">
+                  学生信息
+              </header>
+              <table class="table table-hover">
+                  <thead>
+                  <tr>
+                      <th>#</th>
+                      <th>课程名称</th>
+                      <th>所报班级</th>
+                      <th>开课日期</th>
+                      <th>课程进度</th>
+                      <th><i class="icon_calendar"></i>我的成绩</th>
+                      <th><i class="icon_book"></i>作业管理</th>
+
+                  </tr>
+                  </thead>
+                  <tbody>
+
+                  {% for enroll_obj in enrollments %}
+                      <tr>
+                          <td>xx</td>
+                          <td>{{ enroll_obj.enrolled_clazz.course }}</td>
+                          <td>第{{ enroll_obj.enrolled_clazz.semester }}期</td>
+                          <td>{{ enroll_obj.enrolled_clazz.start_data }}</td>
+                          <td>已上{{ enroll_obj.enrolled_clazz.courserecord_set.all.count }}节课</td>
+                          <td>{% handle_score enroll_obj %}</td>
+                          <td><a href="{% url 'course_record' enroll_obj.id %}">上课记录</a></td>
+                      </tr>
+                  {% endfor %}
+
+
+
+
+                  <tr>
+                      <td>123</td>
+                      <td colspan="5">Larry the Bird</td>
+                      <td>@twitter</td>
+
+                  </tr>
+
+                  </tbody>
+              </table>
+          </section>
+    </div>
+
+{% endblock %}
+

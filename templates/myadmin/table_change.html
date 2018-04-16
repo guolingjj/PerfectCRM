@@ -1,0 +1,255 @@
+{% extends 'blank.html' %}
+{% load tags %}
+
+
+    {% block style %}
+        <style>
+            .extra-horizontal-select {
+                height: 200px !important;
+                width: 107% ;
+            }
+        </style>
+    {% endblock %}
+
+{% block row-menus %}
+    <ol class="breadcrumb">
+    <li><i class="fa fa-home"></i><a href="/myadmin/crm/customer/">首页</a></li>
+    <li><i class="fa fa-edit"></i><a href="javascript:void(0)">修改</a></li>
+    </ol>
+{% endblock  %}
+
+{% block page-content %}
+    <!-- start-error 提示 -->
+    {% if  obj.errors  %}
+        <div class="alert alert-block alert-danger fade in">
+            <button data-dismiss="alert" class="close close-sm" type="button">
+                <i class="icon-remove"></i>
+            </button>
+            <strong>错误了!</strong> {{ obj.errors }}
+         </div>
+    {% endif %}
+    <!-- End-error 提示 -->
+
+    <!-- start-表单内容展示 -->
+    <section class="panel">
+        <header class="panel-heading">
+              修改
+        </header>
+        <div class="panel-body">
+            <form class='form-validate form-horizontal form-change' action="" method="POST" onsubmit="return for_array()"  >
+                <!-- start-循环当前models对象 -->
+                {% for field in obj %}
+                    <div class="form-group" id="filed-list{{ field.name }}">
+                        <!-- s-label -->
+                        <label class="control-label col-lg-2" >
+                            {% if field.field.required %}
+                                {{ field.label }}<span class="required">*</span>
+                            {% else %}
+                                {{ field.label }}
+                            {% endif %}
+                        </label>
+                        <!-- e-label -->
+
+                        <!-- s-input -->
+                        <div class="col-sm-5 " id="{{ field.name }}">
+                            <!-- s-多对多左右互选处理 -->
+                            {% if field.name in filter_horizontal %}
+                                <div class="col-md-5 m2m-all ">
+
+                                    {% if field.name in models_obj.readonly_fileds   %}
+                                        <button id='add-all' type="button" class="btn btn-default btn-xs " disabled="true">添加所有</button>
+                                        <select class="extra-horizontal-select custom-disabled" name='{{ field.name }}all' id="" multiple disabled="true">
+                                    {% else %}
+                                        <button id='add-all' type="button" class="btn btn-default btn-xs">添加所有</button>
+                                        <select class="extra-horizontal-select" name='{{ field.name }}all' id="" multiple >
+                                    {% endif %}
+
+
+                                    {% get_horizontal_option field.name models_obj as all_optiopn %}
+                                    {% get_selected_horizontal_option field.name models_obj id as selected_option %}
+
+                                    {% for i in all_optiopn %}
+                                        {% if i not in selected_option %}
+                                            <option value={{ i.id }}>{{ i }}</option>
+                                        {% endif %}
+
+                                    {% endfor %}
+                                    </select>
+
+                                </div>
+
+                                <div class="col-md-1 left_to_right ">
+                                    <span id="add_selected" class="arrow_right"></span>
+                                    <span id="remove_selected" class="arrow_left"></span>
+                                </div>
+
+                                <div class="col-md-5 m2m-selected ">
+                                    {% if field.name in models_obj.readonly_fileds   %}
+                                        <button id='remove_all' type="button" class="btn btn-default btn-xs " disabled="true">移除所有</button>
+                                        <select class="extra-horizontal-select custom-disabled" name={{ field.name }} id="" multiple disabled="true">
+                                    {% else %}
+                                        <button id='remove_all' type="button" class="btn btn-default btn-xs" >移除所有</button>
+                                        <select class="extra-horizontal-select" name={{ field.name }} id="" multiple >
+
+                                    {% endif %}
+
+                                        {% for i in selected_option %}
+                                            <option value={{ i.id }}>{{ i }}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                <span>{{ field.error.as_text }}</span>
+                                </div>
+                            <!-- e-多对多左右互选处理 -->
+                            {% else %}
+                                {{ field }}
+                                <span style="color: grey">{{ field.help_text }}</span>
+                            {% endif %}
+                        </div>
+                        <!-- e-input -->
+                    </div>
+
+                {% endfor %}
+                <!-- End-循环当前models对象 -->
+                <button type="submit" class="btn btn-default col-md-1 pull-right ">save</button>
+                <a href="../delete">
+                    <button type="button" class="btn btn-default col-md-1 pull-left ">删除</button>
+                </a>
+
+
+                {% csrf_token %}
+            </form>
+        </div>
+    </section>
+    <!-- End-表单内容展示 -->
+
+
+
+{% endblock %}
+{% block script %}
+    <script>
+
+        $("input[date='datetimePicker']").datetimepicker({
+            format: "yyyy-mm-dd",
+            autoclose: true,
+            todayBtn: true,
+            todayHighlight: true,
+            showMeridian: true,
+            minView: "month",
+            pickerPosition: "bottom-left",
+            language: 'zh-CN',//中文，需要引用zh-CN.js包
+    });
+        $(function () {
+            old_readonly=new Array()
+
+            click2_add()
+            click2_remove()
+            add_all()
+            remove_all()
+            add_selected()
+            rmove_selected()
+
+
+
+        })
+
+        click2_add = function () {
+
+            $(".m2m-all select ").on("dblclick", "option", function () {
+
+
+                $(this).appendTo($(this).parent().parent().siblings('.m2m-selected').find('select'))
+
+
+            })
+
+
+        }
+
+        click2_remove = function () {
+
+            $(".m2m-selected select").on("dblclick", "option", function () {
+
+
+                $(this).appendTo($(this).parent().parent().siblings('.m2m-all').find('select'))
+
+            })
+
+
+        }
+
+        add_all = function () {
+            $(".m2m-all button").click(
+                function () {
+
+
+                    $(this).siblings('.extra-horizontal-select').find('option').appendTo($(this).parent().siblings('.m2m-selected').find('select'))
+                }
+            )
+        }
+
+        remove_all = function () {
+            $(" .m2m-selected button").click(
+                function () {
+                    $(this).siblings('.extra-horizontal-select').find('option').appendTo($(this).parent().siblings('.m2m-all').find('select'))
+
+                }
+            )
+        }
+
+        add_selected = function () {
+            $(".left_to_right ").on("click", "#add_selected", function () {
+
+                $(this).parent().siblings(".m2m-all").children('select').find("option:selected").appendTo($(this).parent().siblings('.m2m-selected').find('select'))
+            })
+        }
+
+        rmove_selected = function () {
+            $(".left_to_right ").on('click', '#remove_selected', function () {
+                $(this).parent().siblings(".m2m-selected").children('select').find("option:selected").appendTo($(this).parent().siblings('.m2m-all').find('select'))
+            })
+
+        }
+
+        {#readonly_change=function () {#}
+        {##}
+        {#    $('.form-change').find(".custom-disabled").each(function () {#}
+        {##}
+        {#        var fields= new Array()#}
+        {#        fields.push($(this).attr("name"))#}
+        {#        fields.push($(this).val())#}
+        {##}
+        {#        old_readonly.push(fields)#}
+        {##}
+        {#    })#}
+        {##}
+        {#}#}
+
+        for_array=function () {
+            $('.form-change').find(".custom-disabled").removeAttr("disabled")
+            alert('123')
+            $('.m2m-selected').find('option').each(function () {
+
+                $(this).prop('selected','true')
+
+            })
+{#            $('.form-change').find(".custom-disabled").each(function () {#}
+{#                $(this).removeAttr("disabled")#}
+{#            })}#}
+{##}
+{#            for(var i=0;i<old_readonly.length;i++){#}
+{##}
+{#                var ele=$('<input\>')#}
+{##}
+{#                    ele.attr({'name':old_readonly[i][0],'value':old_readonly[i][1],'type':'hidden'})#}
+{##}
+{#                    ele.appendTo($('.form-change'))#}
+{#            }#}
+
+            return true
+        }
+
+    </script>
+
+
+{% endblock %}

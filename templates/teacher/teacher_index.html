@@ -1,0 +1,58 @@
+{% extends 'blank.html' %}
+{% load teacher_tags %}
+{% block row-menus %}
+    <ol class="breadcrumb">
+        <i class="fa fa-home"></i><li><a href="javascript:void(0)">首页</a></li>
+    </ol>
+
+{% endblock  %}
+{% block left-menu %}
+
+{% endblock  %}
+
+
+{% block page-content %}
+    <div class="col-sm-12">
+          <section class="panel">
+              <header class="panel-heading">
+                  我的班级
+              </header>
+              <table class="table table-hover">
+                  <thead>
+                  <tr>
+                      <th>#</th>
+                      <th>班级名称</th>
+                      <th>班级课程</th>
+                      <th>开课日期</th>
+                      <th>课程进度</th>
+                      <th>上次课程大纲</th>
+
+
+                  </tr>
+                  </thead>
+                  <tbody>
+
+                  {% for class_obj in class_obj_queryset %}
+                      <tr>
+                          <td>xx</td>
+                          <td><a href="/myadmin/crm/courserecord/{{ class_obj.id }}">{{ class_obj }}</a></td>
+                          <td>{{ class_obj.course.name }}</td>
+                          <td>{{ class_obj.start_data }}</td>
+                          <td>已上{{ class_obj.courserecord_set.all.count }}节课</td>
+                          <td>{{ class_obj.courserecord_set.last.outline }}</td>
+
+                      </tr>
+                  {% endfor %}
+
+
+
+
+
+
+                  </tbody>
+              </table>
+          </section>
+    </div>
+
+{% endblock %}
+

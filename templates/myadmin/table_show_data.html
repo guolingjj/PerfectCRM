@@ -1,0 +1,212 @@
+{% extends "blank.html" %}
+{% load tags %}
+
+{% block style %}
+    <style>
+        .active{
+            background-color:#1b2732;
+        }
+
+        .stu_show{
+           display:none;
+        }
+
+
+
+
+
+
+
+    </style>
+{% endblock  %}
+
+
+{% block row-menus %}
+    <ol class="breadcrumb">
+    <li><i class="fa fa-home"></i><a href="javascript:void(0)">首页</a></li>
+    </ol>
+{% endblock  %}
+
+
+{% block page-content %}
+    <div class="alert alert-info stu_show">
+
+    </div>
+
+
+    <br>
+    <form action="">
+        <!-- 添加   搜索  -->
+
+
+
+
+
+        <div class="col-lg-3 pull-right">
+            <div class="input-group">
+                {% if has_search.0 %}
+                    <input type="text" class="form-control" name="q" value="{{ has_search.1 }}" placeholder="Search for...">
+                {% else %}
+                    <input type="text" class="form-control" name="q" placeholder="Search for...">
+                {% endif %}
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit">Go!</button>
+                </span>
+            </div><!-- /input-group -->
+        </div><!-- /.row -->
+
+        <!-- --------------- -->
+
+    </form>
+       <!--   Actions -->
+    <form onsubmit="return handle_action_go(this)" method="POST">
+        <div class="dropdown col-lg-3">
+            <label for="">
+                <span style="line-height: 30px">Actions</span>
+                <select class='form-control pull-right' name="action" id="action-select" style="width: 160px;height: 30px;margin-left: 10px">
+                    <option value="">--------</option>
+                    {%for action_filed in obj.action %}
+
+                        <option value={{ action_filed }}>{{action_filed}}</option>
+                    {% endfor %}
+
+                </select>
+            </label>
+
+            <button id='action-go' class="btn btn-xs " type="submit" style="width: 30px;height: 30px;margin-top:-2px ">Go!</button>
+        </div>
+    {% csrf_token %}
+    </form>
+    <br>
+    <br>
+    <!-------------------- -->
+    <!--数据展示 -->
+
+    <div class="col-sm-12">
+          <!--   Kitchen Sink -->
+            <section class="panel">
+                <header class="panel-heading">
+                    {{ obj.vname }}
+                    <div class='col-lg-1 pull-right'>
+                        <a href="./add"><button type="button" class="btn btn-success btn-xs ">添加一条数据</button></a>
+                    </div>
+
+                    <span class="pull-right">共{{ page_count }}页</span>
+                    <span class="pull-right text-center">{{ data_count }}条数据</span>
+                </header>
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+{#                            检索开始#}
+                            <form action="">
+                                {% showfilter obj filter_dict%}
+                                <div class='col-lg-1'>
+                                    <button class="btn btn-default btn-sm" ><span class="icon_search"></span> 检索</button>
+                                </div>
+                            </form>
+{#                            检索结束#}
+
+{#                            表格数据#}
+                            <thead>{{ data_str|safe }}</thead>
+{#                            表格数据结束#}
+
+                        </table>
+                        <!--分页 -->
+                        <ul class="pagination">
+                            {{ page_set|safe }}
+                        </ul>
+                        <!--分页 结束 -->
+                    </div>
+                </div>
+            </section>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+
+
+
+    $(function () {
+        check_all()
+        handle_active()
+        handle_alert()
+    })
+
+    //checkbox 全选
+
+    check_all=function () {
+
+        $(".table-responsive ").on('change','#check-all',function () {
+            if ($(this).is(':checked')){
+                $('.check-field').prop('checked',true)
+            }
+
+            else{
+                $('.check-field').prop('checked',false)
+            }
+
+        })
+    }
+
+    //Action-post-submit
+
+    handle_action_go=function (xxx) {
+
+        var id_list=[]
+        var action_method=$('#action-select option:selected').val()
+        $('.check-field:checked').each(function () {
+            id_list.push($(this).attr('val'))
+        })
+
+        id_list=JSON.stringify(id_list)
+        var hidden_input_id=document.createElement("input")
+        var hidden_input_action=document.createElement("input")
+        $(hidden_input_id).attr({"value":id_list,'type':'hidden','name':'id'})
+        $(hidden_input_action).attr({"value":action_method,'type':'hidden','name':'action'})
+        $(xxx).append(hidden_input_id)
+        $(xxx).append(hidden_input_action)
+
+        return true
+    }
+
+    handle_active=function () {
+
+        $('.sidebar-menu li[name="客户页"] a ').find("span").last().addClass("arrow_carrot-down")
+        $('.sidebar-menu li[name="客户页"] a ').find("span").last().removeClass("arrow_carrot-right")
+        $('.sidebar-menu li[name="客户页"] ').find("ul").attr('style',"display:block")
+
+
+        if ('{{ request.path }}' == "/myadmin/crm/customer/o"){
+            $('.sidebar-menu li[name="客户页"] ul li ').last().addClass("active")
+        }
+        if('{{ request.path }}' == "/myadmin/crm/customer/") {
+            $('.sidebar-menu li[name="客户页"] ul li ').first().addClass("active")
+        }
+        if('{{ request.path }}' == "/myadmin/crm/customfollowup/") {
+            $('.sidebar-menu li[name="客户跟进页"]').first().addClass("active")
+            $('.sidebar-menu li[name="客户页"] a ').find("span").last().removeClass("arrow_carrot-down")
+            $('.sidebar-menu li[name="客户页"] a ').find("span").last().addClass("arrow_carrot-right")
+            $('.sidebar-menu li[name="客户页"] ').find("ul").attr('style',"display:none")
+        }
+
+
+    }
+    handle_alert=function () {
+        $('.moreinfor').on("click",function () {
+
+            $('.alert').removeClass('stu_show')
+            $('.alert').empty()
+            var infor=$(this).siblings('span').html()
+            $('.alert').html(infor)
+
+
+
+
+        })
+    }
+
+
+
+    </script>
+{% endblock  %}

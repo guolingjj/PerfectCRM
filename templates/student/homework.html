@@ -1,0 +1,118 @@
+{% extends 'blank.html' %}
+{% load stu_tags %}
+{% block cus-css %}
+    <link rel="stylesheet" href="/static/plugin/dropzone.css">
+{% endblock %}
+{% block row-menus %}
+    <ol class="breadcrumb">
+    <li><i class="fa fa-home"></i><a href="{% url 'student_index' %}">首页</a></li>
+    <li><i class="fa fa-book"></i><a href="../">课程详情</a></li>
+    <li><i class="fa fa-edit"></i>我的作业</li>
+    </ol>
+{% endblock  %}
+
+{% block page-content %}
+    <div class="col-sm-12">
+        <div class="panel panel-info">
+              <div class="panel-heading text-center ">
+                  <h4>
+
+                      {{ studyrecord_obj.course_record.clazz }} 第 {{ studyrecord_obj.course_record.day_num }} 节作业内容
+
+                  </h4>
+              </div>
+              <div id="collapseOne" class="panel-collapse collapse in">
+                  <div class="panel-body">
+                       <p>作业标题:{{ studyrecord_obj.course_record.home_title }}</p>
+                      {{ studyrecord_obj.course_record.homework }}
+                  </div>
+              </div>
+        </div>
+
+
+
+        <div  class=" panel panel-success">
+            <div class="panel-heading">我的作业</div>
+                  {% if studyrecord_obj.has_submit_homework %}
+                      {% if homework_names %}
+                          <ul>{% for name in homework_names  %}
+                             <li><a href="{% url 'homework_down' studyrecord_obj.id name%}">{{ name }}</a></li>
+                          {% endfor %}
+                          </ul>
+
+
+                      {% else %}
+                          <p>作业可能被异常删除,请联系老师</p>
+                      {% endif %}
+                  {% else  %}
+
+
+                      <div id='myId' class="dropzone panel-content"  style="height: 250px"></div>
+
+                      <button type="button" id="sub-img" class="btn btn-xs  col-lg-pull-12">提交作业</button>
+                  {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block script %}
+    <script src="/static/plugin/dropzone.js"></script>
+    <script src="/static/js/jquery.cookie.js"></script>
+    <script>
+        upload_status=false
+        Dropzone.autoDiscover = false;
+        $("#myId").dropzone({
+            url: window.document.location.href,
+            method: 'post',
+            clickable:true,
+            autoProcessQueue:false,
+            acceptedFiles:".RAR,.ZIP,.CAB,.ARJ,.LZH,.ACE,.7-Zip,.TAR,.GZip,.UUE,.BZ2,.JAR,.ISO,.Z",
+            filesizeBase: 1024,
+            uploadMultiple: true,
+            data:{'xxx':'yyy'},
+            parallelUploads: 100,
+            headers:{"X-CSRFToken":$.cookie("csrftoken")},
+            maxFiles: 2,
+            dictDefaultMessage:"请将作业以压缩格式上传,命名为班级+姓名",
+            init:function () {
+                this.on("addedfile", function(file) {
+                     var removeButton = Dropzone.createElement("<button id='del-btn' class='btn btn-danger btn-xs'>删除文件</button>");
+                     var _this = this;
+
+                     removeButton.addEventListener("click", function(e) {
+
+                          e.preventDefault();
+                          e.stopPropagation();
+                          _this.removeFile(file);
+                     });
+                     file.previewElement.appendChild(removeButton);
+
+                })
+
+                var _this = this;
+
+                $("#sub-img").on("click", function() {
+                    if (_this.files.length==1){_this.processQueue();}
+                    else{alert("请上传压缩包格式的作业")}
+
+                });
+
+                this.on("maxfilesexceeded", function(file) { this.removeFile(file); });
+
+
+                this.on("success", function(e) {
+                    $("#sub-img").remove();
+                    $("#del-btn").remove();
+
+
+
+                });
+            },
+
+
+    });
+    </script>
+{% endblock %}

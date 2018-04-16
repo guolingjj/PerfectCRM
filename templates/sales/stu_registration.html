@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% block body %}
+    <br>
+    <br>
+<div class="container">
+    <div class="panel panel-info">
+        <div class="panel-heading">学生报名</div>
+        <span style="color: red">{{ coustomer_form.errors }}</span>
+        {% if enroll_obj.customer.status == 2 %}
+            <div class="panel-body">
+
+                <div class="alert alert-success" role="alert">您的报名信息已提交,我们将很快审核,即将开启走上巅峰之路</div>
+            </div>
+        {% elif enroll_obj.customer.status == 3  %}
+            <div class="panel-body">
+
+                <div class="alert alert-success" role="alert">资料已经审核,请前往缴费,网上缴费连接xxxxx(后期完成线上缴费)</div>
+            </div>
+        {%else  %}
+            <div class="panel-body">
+            <form class="form-horizontal" id="formform" method="POST" onsubmit="return check_agree()">{% csrf_token %}
+                {% for obj in coustomer_form%}
+
+                    <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 control-label">{{ obj.label }}</label>
+                <div class="col-sm-8">
+                  {{ obj }}
+                </div>
+              </div>
+                {% endfor %}
+                <hr>
+
+                <div id="myId" class="dropzone form-group  col-md-12 col-lg-12 col-lg-push-0 " >
+                    <button type="button" id="sub-img" class="btn btn-xs  col-lg-pull-12">提交照片</button>
+
+                </div>
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">所报班级</label>
+                    <div class="col-sm-8">
+                        <p class="text-info">{{ enroll_obj.enrolled_clazz }}</p>
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">费用</label>
+                    <div class="col-sm-8">
+                        <p class="text-info">{{ enroll_obj.enrolled_clazz.course.price }}</p>
+
+                    </div>
+                </div>
+
+                <div class="well well-lg col-lg-9 col-lg-offset-1">
+                    <h4 class="text-center">技术合同</h4>
+                        <p>{{ enroll_obj.enrolled_clazz.contract.content }}</p>
+                    <div class="radio">
+                      <label>
+                        <input type="checkbox" name="isagree" id="optionsRadios1" value="true" >
+                        我以仔细阅读协议并同意协议内容
+
+                      </label>
+
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class=" col-sm-10 col-lg-offset-10">
+                      <button type="submit" class="btn btn-default">下一步</button>
+                    </div>
+                </div>
+
+        {# dropzone#}
+
+
+
+
+
+            </form>
+
+        </div>
+        {%endif  %}
+
+
+    </div>
+</div>
+
+
+
+
+{% endblock %}
+{% block script %}
+    <script>
+    upload_status=false
+    check_agree=function () {
+        $("#formform").find('.disabled_field').removeAttr("disabled")
+        if($('#optionsRadios1').prop("checked")&&upload_status){
+
+            return true
+        }
+        else{
+            alert("提交失败,请检查是否同意协议和身份证是否正确上传")
+            return false
+        }
+
+
+
+    }
+    Dropzone.autoDiscover = false;//不知道该行有什么用，欢迎高手下方评论解答
+    $("#myId").dropzone({
+            url: window.document.location.href,
+            method: 'post',
+            clickable:true,
+            autoProcessQueue:false,
+            acceptedFiles:".JPG",
+            filesizeBase: 1024,
+            uploadMultiple: true,
+            parallelUploads: 100,
+            headers:{"X-CSRFToken":$.cookie("csrftoken")},
+            maxFiles: 2,
+            dictDefaultMessage:"点击或拖拽您的身份证正反面照片进行添加",
+            init:function () {
+                this.on("addedfile", function(file) {
+                     var removeButton = Dropzone.createElement("<button id='del-btn' class='btn btn-danger btn-xs'>删除文件</button>");
+                     var _this = this;
+
+                     removeButton.addEventListener("click", function(e) {
+
+                          e.preventDefault();
+                          e.stopPropagation();
+                          _this.removeFile(file);
+                     });
+                     file.previewElement.appendChild(removeButton);
+
+                })
+
+                var _this = this;
+
+                $("#sub-img").on("click", function() {
+                    if (_this.files.length==2){_this.processQueue();}
+                    else{alert("请上传身份证正反2张照片")}
+
+                });
+
+                this.on("maxfilesexceeded", function(file) { this.removeFile(file); });
+
+
+                this.on("success", function(e) {
+                    $("#sub-img").remove();
+                    $("#del-btn").remove();
+
+                    _this.clickable=false
+                    upload_status=true;
+                });
+            },
+
+
+    });
+
+
+
+    </script>
+
+{% endblock  %}
